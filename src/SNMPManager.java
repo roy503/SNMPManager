@@ -153,7 +153,7 @@ public ResponseEvent get(OID oids[], Printer obj) throws IOException{
 	if(event.getResponse() != null) {
 		return event;
 	}
-	System.out.println("GET timed out");
+	//GET timed out
 	return event;
 }
 
