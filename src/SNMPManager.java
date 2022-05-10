@@ -48,7 +48,7 @@ public static void main(String[] args) throws IOException {
 }
 
 private static void inputAddresses(String input) throws IOException {
-	//input addresses from text file
+	//input addresses from text file line by line
 	File file = new File(input);
 	BufferedReader reader = null;
 	try {
