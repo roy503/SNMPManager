@@ -37,8 +37,6 @@ public static void main(String[] args) throws IOException {
 */
 	printers = new ArrayList<Printer>();
 	addressList = new ArrayList<String>();
-	//System.out.println(args[0]);
-	//System.out.println(System.getProperty("user.dir")+"\\src\\"+args[0]);
 	//This gets the current working directory and adds the input file "printers.txt" to it
 	inputAddresses(System.getProperty("user.dir")+"\\src\\"+args[0]);
 	System.out.println(String.format("%-30s %-16s %-70s %-20s %2s", "Location","IP","Model","Serial","Toner"));
@@ -50,7 +48,7 @@ public static void main(String[] args) throws IOException {
 }
 
 private static void inputAddresses(String input) throws IOException {
-	//
+	//input addresses from text file
 	File file = new File(input);
 	BufferedReader reader = null;
 	try {
@@ -76,7 +74,6 @@ private static void inputAddresses(String input) throws IOException {
 private void start() throws IOException {
 	TransportMapping transport = new DefaultUdpTransportMapping();
 	snmp = new Snmp(transport);
-	// Do not forget this line!
 	transport.listen();
 }
 
@@ -156,9 +153,7 @@ public ResponseEvent get(OID oids[], Printer obj) throws IOException{
 	if(event.getResponse() != null) {
 		return event;
 	}
-	//throw new RuntimeException("bad");
-	//System.out.println("GET timed out");
-	//could try another version of snmp? 
+	System.out.println("GET timed out");
 	return event;
 }
 
@@ -174,6 +169,7 @@ private CommunityTarget getTarget(Printer obj) {
 	target.setAddress(targetAddress);
 	target.setRetries(2);
 	target.setTimeout(1500);
+	//SNMP Version 1, 2c, or 3
 	target.setVersion(SnmpConstants.version1);
 	return target;
 }
