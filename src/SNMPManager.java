@@ -149,9 +149,23 @@ public ResponseEvent get(OID oids[], Printer obj) throws IOException{
 		pdu.add(new VariableBinding(oid));
 	}
 	pdu.setType(PDU.GET);
-	ResponseEvent event = snmp.send(pdu, getTarget(obj), null);
+	ResponseEvent event = snmp.send(pdu, getTarget(obj, 2), null);
+	//try v2c
 	if(event.getResponse() != null) {
+		//v2c works
 		return event;
+	}
+	else {
+		//v2c timed out
+		event = snmp.send(pdu, getTarget(obj, 1), null);
+		//try v1
+		if(event.getResponse() != null) {
+			//v1 works
+			return event;
+		}
+		else {
+			//v1 timed out
+		}
 	}
 	//GET timed out
 	return event;
@@ -162,7 +176,7 @@ public ResponseEvent get(OID oids[], Printer obj) throws IOException{
 * where the data should be fetched and how.
 * @return
 */
-private CommunityTarget getTarget(Printer obj) {
+private CommunityTarget getTarget(Printer obj, int ver) {
 	Address targetAddress = GenericAddress.parse(address);
 	CommunityTarget target = new CommunityTarget();
 	target.setCommunity(new OctetString("public"));
@@ -170,7 +184,12 @@ private CommunityTarget getTarget(Printer obj) {
 	target.setRetries(2);
 	target.setTimeout(1500);
 	//SNMP Version 1, 2c, or 3
-	target.setVersion(SnmpConstants.version1);
+	if(ver==2) {
+		target.setVersion(SnmpConstants.version2c);
+	}
+	else if(ver==1) {
+		target.setVersion(SnmpConstants.version1);
+	}
 	return target;
 }
 }
