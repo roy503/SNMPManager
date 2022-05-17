@@ -1,7 +1,7 @@
 public class Printer {
 
 private String address, name, serial, location;
-private int toner, K1, K2;
+private int toner, K1, K2, cyan, magenta, yellow, black;
 private boolean offline = false;
 	
 public Printer(String address) {
@@ -62,6 +62,30 @@ public void setK2(int ton) {
 
 public int getK2() {
 	return K2;
+}
+
+public void setCyan(int ton) {
+	cyan = ton;
+}
+
+public int getCyan() {
+	return cyan;
+}
+
+public void setMagenta(int ton) {
+	magenta = ton;
+}
+
+public int getMagenta() {
+	return magenta;
+}
+
+public void setYellow(int ton) {
+	yellow = ton;
+}
+
+public int getYellow() {
+	return yellow;
 }
 
 @Override

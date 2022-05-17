@@ -42,8 +42,12 @@ public static void main(String[] args) throws IOException {
 	System.out.println(String.format("%-30s %-16s %-70s %-20s %2s", "Location","IP","Model","Serial","Toner"));
 	for(int i = 0;i < printers.size();i++) {
 		SNMPManager client = new SNMPManager("udp:"+printers.get(i).getIP()+"/161"); // this needs to be looped somehow
+		//TransportMapping transport = client.start();
 		client.start();
 		client.getAsString(printers.get(i));
+		//transport.close();
+		client.snmp.close();
+		
 	}
 }
 
@@ -86,14 +90,21 @@ private void start() throws IOException {
 public void getAsString(Printer obj) throws IOException {
 
 	ResponseEvent event;
+	//colour printer
+	if(address.equals("udp:10.214.192.87/161")) {
+		event = get(new OID[] {new OID(".1.3.6.1.2.1.25.3.2.1.3.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.1"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.1"),
+				new OID(".1.3.6.1.2.1.43.11.1.1.9.1.2"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.2"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.3"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.3"),
+				new OID(".1.3.6.1.2.1.43.11.1.1.9.1.4"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.4"),new OID(".1.3.6.1.2.1.1.6.0"),new OID(".1.3.6.1.2.1.43.5.1.1.17.1")}, obj);	
+		//0 name, 1 cyan curr, 2 cyan max, 3 magenta curr, 4 magenta max, 5yellow curr, 6yellow max, 7 black curr, 8 black max, 9 location, 10 serial
+	}
 	//Print room printers use 2 toners, K1 and K2
-	if(address.equals("udp:10.214.192.79/161") || address.equals("udp:10.214.192.91/161")){
-		event = get(new OID[] { new OID(".1.3.6.1.2.1.1.5.0"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.30"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.30"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.31"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.31"), new OID(".1.3.6.1.2.1.1.6.0"),new OID(".1.3.6.1.2.1.43.5.1.1.17.1")}, obj);
+	else if(address.equals("udp:10.214.192.79/161") || address.equals("udp:10.214.192.91/161")){
+		event = get(new OID[] { new OID(".1.3.6.1.2.1.25.3.2.1.3.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.30"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.30"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.31"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.31"), new OID(".1.3.6.1.2.1.1.6.0"),new OID(".1.3.6.1.2.1.43.5.1.1.17.1")}, obj);
 		//0 name, 1 K1 Curr, 2 K1 Max, 3 K2 Curr, 4 K2 Max, 5 Location, 6 Serial
 	}
 	//Office label printer
 	else if(address.equals("udp:10.214.192.250/161")) {
-		event = get(new OID[] { new OID(".1.3.6.1.2.1.1.5.0"), new OID(".1.3.6.1.2.1.1.6.0")}, obj);
+		event = get(new OID[] { new OID(".1.3.6.1.2.1.25.3.2.1.3.1"), new OID(".1.3.6.1.2.1.1.6.0")}, obj);
 		//0 desc, 1 location
 	}
 	//All other printers
@@ -104,7 +115,20 @@ public void getAsString(Printer obj) throws IOException {
 	//not sure if this toner works for colour printers?
 	if(event.getResponse() != null) {
 		//Print room printers
-		if(address.equals("udp:10.214.192.79/161") || address.equals("udp:10.214.192.91/161")) {
+		if(address.equals("udp:10.214.192.87/161")) {
+			//colour printer
+			//0 name, 1 cyan curr, 2 cyan max, 3 magenta curr, 4 magenta max, 5yellow curr, 6yellow max, 7 black curr, 8 black max, 9 location, 10 serial
+			obj.setName(event.getResponse().get(0).getVariable().toString());
+			obj.setCyan(Math.round(Float.parseFloat(event.getResponse().get(1).getVariable().toString())/Float.parseFloat(event.getResponse().get(2).getVariable().toString())*100));
+			obj.setMagenta(Math.round(Float.parseFloat(event.getResponse().get(3).getVariable().toString())/Float.parseFloat(event.getResponse().get(4).getVariable().toString())*100));
+			obj.setYellow(Math.round(Float.parseFloat(event.getResponse().get(5).getVariable().toString())/Float.parseFloat(event.getResponse().get(6).getVariable().toString())*100));
+			obj.setToner(Math.round(Float.parseFloat(event.getResponse().get(7).getVariable().toString())/Float.parseFloat(event.getResponse().get(8).getVariable().toString())*100));
+			obj.setLocation(event.getResponse().get(9).getVariable().toString());
+			obj.setSerial(event.getResponse().get(10).getVariable().toString());
+			System.out.println(String.format("%-30s %-16s %-70s %-20s %2d%% %2d%% %2d%% %2d%%", obj.getLocation(), obj.getIP(), obj.getName(), obj.getSerial(), obj.getCyan(), obj.getMagenta(), obj.getYellow(), obj.getToner()));
+		}
+		else if(address.equals("udp:10.214.192.79/161") || address.equals("udp:10.214.192.91/161")) {
+			//print room printers
 			float tonerK1 = Float.parseFloat(event.getResponse().get(1).getVariable().toString())/Float.parseFloat(event.getResponse().get(2).getVariable().toString());
 			float tonerK2 = Float.parseFloat(event.getResponse().get(3).getVariable().toString())/Float.parseFloat(event.getResponse().get(4).getVariable().toString());
 			obj.setK1(Math.round(tonerK1*100));
