@@ -1,7 +1,7 @@
 public class Printer {
 
 private String address, name, serial, location;
-private int toner, K1, K2, cyan, magenta, yellow, black;
+private int K1, K2, cyan, magenta, yellow, black;
 private boolean offline = false;
 	
 public Printer(String address) {
@@ -28,12 +28,12 @@ public String getSerial() {
 	return serial;
 }
 
-public void setToner(int ton) {
-	toner = ton;
+public void setBlack(int ton) {
+	black = ton;
 }
 
-public int getToner() {
-	return toner;
+public int getBlack() {
+	return black;
 }
 
 public void setLocation(String loc) {
@@ -90,7 +90,7 @@ public int getYellow() {
 
 @Override
 public String toString() {
-	return String.format("%-30s %-16s %-70s %-20s %2d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getToner());
+	return String.format("%-30s %-16s %-70s %-20s %2d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getBlack());
 }
 
 }

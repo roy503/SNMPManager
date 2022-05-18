@@ -1,9 +1,7 @@
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.lang.annotation.Target;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +36,9 @@ public static void main(String[] args) throws IOException {
 	printers = new ArrayList<Printer>();
 	addressList = new ArrayList<String>();
 	//This gets the current working directory and adds the input file "printers.txt" to it
-	inputAddresses(System.getProperty("user.dir")+"\\src\\"+args[0]);
+	//inputAddresses(System.getProperty("user.dir")+"\\"+args[0]);
+	//This uses the printers file included in the jar
+	inputAddresses();
 	System.out.println(String.format("%-30s %-16s %-70s %-20s %2s", "Location","IP","Model","Serial","Toner"));
 	for(int i = 0;i < printers.size();i++) {
 		SNMPManager client = new SNMPManager("udp:"+printers.get(i).getIP()+"/161"); // this needs to be looped somehow
@@ -51,21 +51,19 @@ public static void main(String[] args) throws IOException {
 	}
 }
 
-private static void inputAddresses(String input) throws IOException {
+private static void inputAddresses() throws IOException {
 	//input addresses from text file
-	File file = new File(input);
-	BufferedReader reader = null;
-	try {
-		reader = new BufferedReader(new FileReader(file));
-	} catch (FileNotFoundException e) {
-		System.out.println("File not found");
-	}
-	String line;
-	while((line = reader.readLine()) != null) {
-		//while line exists, add to list
-		Printer newPrinter = new Printer(line);
-		addressList.add(line);
-		printers.add(newPrinter);
+	//File file = new File(input);	 
+	try(InputStream in = SNMPManager.class.getResourceAsStream("printers");
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in))){
+		//reader = new BufferedReader(new FileReader(file));
+		String line;
+		while((line = reader.readLine()) != null) {
+			//while line exists, add to list
+			Printer newPrinter = new Printer(line);
+			addressList.add(line);
+			printers.add(newPrinter);
+		}
 	}
 }
 
@@ -76,7 +74,7 @@ private static void inputAddresses(String input) throws IOException {
 * @throws IOException
 */
 private void start() throws IOException {
-	TransportMapping transport = new DefaultUdpTransportMapping();
+	TransportMapping<?> transport = new DefaultUdpTransportMapping();
 	snmp = new Snmp(transport);
 	transport.listen();
 }
@@ -89,7 +87,7 @@ private void start() throws IOException {
 */
 public void getAsString(Printer obj) throws IOException {
 
-	ResponseEvent event;
+	ResponseEvent<?> event;
 	//colour printer
 	if(address.equals("udp:10.214.192.87/161")) {
 		event = get(new OID[] {new OID(".1.3.6.1.2.1.25.3.2.1.3.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.1"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.1"),
@@ -122,10 +120,10 @@ public void getAsString(Printer obj) throws IOException {
 			obj.setCyan(Math.round(Float.parseFloat(event.getResponse().get(1).getVariable().toString())/Float.parseFloat(event.getResponse().get(2).getVariable().toString())*100));
 			obj.setMagenta(Math.round(Float.parseFloat(event.getResponse().get(3).getVariable().toString())/Float.parseFloat(event.getResponse().get(4).getVariable().toString())*100));
 			obj.setYellow(Math.round(Float.parseFloat(event.getResponse().get(5).getVariable().toString())/Float.parseFloat(event.getResponse().get(6).getVariable().toString())*100));
-			obj.setToner(Math.round(Float.parseFloat(event.getResponse().get(7).getVariable().toString())/Float.parseFloat(event.getResponse().get(8).getVariable().toString())*100));
+			obj.setBlack(Math.round(Float.parseFloat(event.getResponse().get(7).getVariable().toString())/Float.parseFloat(event.getResponse().get(8).getVariable().toString())*100));
 			obj.setLocation(event.getResponse().get(9).getVariable().toString());
 			obj.setSerial(event.getResponse().get(10).getVariable().toString());
-			System.out.println(String.format("%-30s %-16s %-70s %-20s %2d%% %2d%% %2d%% %2d%%", obj.getLocation(), obj.getIP(), obj.getName(), obj.getSerial(), obj.getCyan(), obj.getMagenta(), obj.getYellow(), obj.getToner()));
+			System.out.println(String.format("%-30s %-16s %-70s %-20s %2d%% %2d%% %2d%% %2d%%", obj.getLocation(), obj.getIP(), obj.getName(), obj.getSerial(), obj.getCyan(), obj.getMagenta(), obj.getYellow(), obj.getBlack()));
 		}
 		else if(address.equals("udp:10.214.192.79/161") || address.equals("udp:10.214.192.91/161")) {
 			//print room printers
@@ -147,7 +145,7 @@ public void getAsString(Printer obj) throws IOException {
 		else {
 			//all others
 			float tonerP = Float.parseFloat(event.getResponse().get(1).getVariable().toString())/Float.parseFloat(event.getResponse().get(2).getVariable().toString());
-			obj.setToner(Math.round(tonerP*100));
+			obj.setBlack(Math.round(tonerP*100));
 			obj.setName(event.getResponse().get(0).getVariable().toString());
 			obj.setLocation(event.getResponse().get(3).getVariable().toString());
 			obj.setSerial(event.getResponse().get(4).getVariable().toString());
@@ -167,13 +165,13 @@ public void getAsString(Printer obj) throws IOException {
 * @return
 * @throws IOException
 */
-public ResponseEvent get(OID oids[], Printer obj) throws IOException{
+public ResponseEvent<?> get(OID oids[], Printer obj) throws IOException{
 	PDU pdu = new PDU();
 	for (OID oid : oids) {
 		pdu.add(new VariableBinding(oid));
 	}
 	pdu.setType(PDU.GET);
-	ResponseEvent event = snmp.send(pdu, getTarget(obj, 2), null);
+	ResponseEvent<?> event = snmp.send(pdu, getTarget(obj, 2), null);
 	//try v2c
 	if(event.getResponse() != null) {
 		//v2c works
@@ -200,9 +198,9 @@ public ResponseEvent get(OID oids[], Printer obj) throws IOException{
 * where the data should be fetched and how.
 * @return
 */
-private CommunityTarget getTarget(Printer obj, int ver) {
+private CommunityTarget<Address> getTarget(Printer obj, int ver) {
 	Address targetAddress = GenericAddress.parse(address);
-	CommunityTarget target = new CommunityTarget();
+	CommunityTarget<Address> target = new CommunityTarget<Address>();
 	target.setCommunity(new OctetString("public"));
 	target.setAddress(targetAddress);
 	target.setRetries(2);
