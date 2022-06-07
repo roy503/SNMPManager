@@ -4,19 +4,28 @@ Printer SNMP Client
 Get printer info from list of networked printer IP addresses.
 
 TO USE:
-Edit printers file and make it a single list of IP addresses, one address per line.
-Export as Jar and run.
+Make a txt file that is a single list of IP addresses, one address per line.
+Name it "printers.txt" and place it in src
+Export as runnable Jar
+run via .bat file:
+
+@echo off
+java -jar SNMPClient.jar
+@pause
+
+CURRENT:
+
+set to SNMP V2C, if it fails it will use V1.
+prints to console.
+
+
+Might need to edit code a bit if you have colour / label / multi function printers.
 
 TODO:
 
-Currently set to SNMP V2C, if it fails it will use V1.
-
-Currently prints to console.
 Print an XML file of printer stats. create css to display the XML file.
 
 Potentially use different input method, currently using txt file with each ip address on new line. Is it possible to search AD for all printers in certain subnet?
-
-Clean up toString() method so it works for all printers (curently only works for blk printers)
 
 Run method at set intervals to monitor (or use some sort of windows scheduling?)
 
