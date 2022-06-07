@@ -87,8 +87,6 @@ private void start() {
 		System.out.println("Error trying to listen()");
 		System.exit(1);
 	}
-	
-	//transport.listen();
 }
 
 /**
