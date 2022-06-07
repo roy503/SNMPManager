@@ -24,8 +24,7 @@ private SNMPManager()
 {
 	addressList = new ArrayList<String>();
 	printers = new ArrayList<Printer>();
-	snmp = null;
-	
+	snmp = null;	
 }
 
 public static void main(String[] args){
