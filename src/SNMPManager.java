@@ -49,7 +49,7 @@ public static void main(String[] args) throws IOException {
 private static void inputAddresses() throws IOException {
 	//input addresses from text file
 	//File file = new File(input);	 
-	try(InputStream in = SNMPManager.class.getResourceAsStream("printers");
+	try(InputStream in = SNMPManager.class.getResourceAsStream("printers.txt");
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in))){
 		//reader = new BufferedReader(new FileReader(file));
 		String line;
