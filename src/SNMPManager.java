@@ -82,9 +82,10 @@ private void start() throws IOException {
 */
 public void getAsString(Printer obj) throws IOException {
 
+	//These care custom IP settings for the printers on my network
 	ResponseEvent<?> event;
 	//colour printer
-	if(address.equals("udp:10.214.192.87/161")) {
+	if(address.equals("udp:10.214.192.87/161") || address.equals("udp:10.214.192.95/161")) {
 		event = get(new OID[] {new OID(".1.3.6.1.2.1.25.3.2.1.3.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.1"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.1"),
 				new OID(".1.3.6.1.2.1.43.11.1.1.9.1.2"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.2"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.3"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.3"),
 				new OID(".1.3.6.1.2.1.43.11.1.1.9.1.4"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.4"),new OID(".1.3.6.1.2.1.1.6.0"),new OID(".1.3.6.1.2.1.43.5.1.1.17.1")}, obj);	
@@ -108,7 +109,7 @@ public void getAsString(Printer obj) throws IOException {
 	//not sure if this toner works for colour printers?
 	if(event.getResponse() != null) {
 		//Print room printers
-		if(address.equals("udp:10.214.192.87/161")) {
+		if(address.equals("udp:10.214.192.87/161") || address.equals("udp:10.214.192.95/161") ) {
 			//colour printer
 			//0 name, 1 cyan curr, 2 cyan max, 3 magenta curr, 4 magenta max, 5yellow curr, 6yellow max, 7 black curr, 8 black max, 9 location, 10 serial
 			obj.setName(event.getResponse().get(0).getVariable().toString());
@@ -116,9 +117,15 @@ public void getAsString(Printer obj) throws IOException {
 			obj.setMagenta(Math.round(Float.parseFloat(event.getResponse().get(3).getVariable().toString())/Float.parseFloat(event.getResponse().get(4).getVariable().toString())*100));
 			obj.setYellow(Math.round(Float.parseFloat(event.getResponse().get(5).getVariable().toString())/Float.parseFloat(event.getResponse().get(6).getVariable().toString())*100));
 			obj.setBlack(Math.round(Float.parseFloat(event.getResponse().get(7).getVariable().toString())/Float.parseFloat(event.getResponse().get(8).getVariable().toString())*100));
-			obj.setLocation(event.getResponse().get(9).getVariable().toString());
+			if(address.equals("udp:10.214.192.95/161")) {
+				obj.setLocation("Careers Office Colour (FR0037)");
+			}
+			else {
+				obj.setLocation(event.getResponse().get(9).getVariable().toString());
+			}
 			obj.setSerial(event.getResponse().get(10).getVariable().toString());
-			System.out.println(String.format("%-30s %-16s %-70s %-20s %2d%% %2d%% %2d%% %2d%%", obj.getLocation(), obj.getIP(), obj.getName(), obj.getSerial(), obj.getCyan(), obj.getMagenta(), obj.getYellow(), obj.getBlack()));
+			obj.setColour();
+			System.out.println(obj.toString());
 		}
 		else if(address.equals("udp:10.214.192.79/161") || address.equals("udp:10.214.192.91/161")) {
 			//print room printers
@@ -129,13 +136,30 @@ public void getAsString(Printer obj) throws IOException {
 			obj.setName(event.getResponse().get(0).getVariable().toString());
 			obj.setLocation(event.getResponse().get(5).getVariable().toString());
 			obj.setSerial(event.getResponse().get(6).getVariable().toString());
-			System.out.println(String.format("%-30s %-16s %-70s %-20s %2d%% %2d%%", obj.getLocation(), obj.getIP(), obj.getName(), obj.getSerial(), obj.getK1(), obj.getK2()));
+			obj.setPrintRoom();
+			System.out.println(obj.toString());
 		}
 		//label printer
 		else if(address.equals("udp:10.214.192.250/161")) {
 			obj.setName(event.getResponse().get(0).getVariable().toString());
 			obj.setLocation(event.getResponse().get(1).getVariable().toString());
-			System.out.println(String.format("%-30s %-16s %-70s", obj.getLocation(), obj.getIP(), obj.getName()));
+			obj.setLabelPrinter();
+			System.out.println(obj.toString());
+		}
+		else if(address.equals("udp:10.214.192.76/161") || address.equals("udp:10.214.192.97/161")) {
+			//p2015 printers location fix
+			float tonerP = Float.parseFloat(event.getResponse().get(1).getVariable().toString())/Float.parseFloat(event.getResponse().get(2).getVariable().toString());
+			obj.setBlack(Math.round(tonerP*100));
+			obj.setName(event.getResponse().get(0).getVariable().toString());
+			if(address.equals("udp:10.214.192.76/161")) {
+				obj.setLocation("LAST Office (FR0030)");
+			}
+			else if(address.equals("udp:10.214.192.97/161")) {
+				obj.setLocation("TSO Office (FR0091)");
+			}
+			obj.setSerial(event.getResponse().get(4).getVariable().toString());
+			System.out.println(obj.toString());
+			
 		}
 		else {
 			//all others
@@ -150,7 +174,7 @@ public void getAsString(Printer obj) throws IOException {
 	else {
 		//can't contact printer
 		obj.setOffline();
-		System.out.println(String.format("%-30s %-14s", "Printer Offline", obj.getIP()));
+		System.out.println(obj.toString());
 		}
 }
 
