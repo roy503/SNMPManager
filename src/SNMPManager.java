@@ -35,14 +35,10 @@ public static void main(String[] args) throws IOException {
 */
 	printers = new ArrayList<Printer>();
 	addressList = new ArrayList<String>();
-	//This gets the current working directory and adds the input file "printers.txt" to it
-	//inputAddresses(System.getProperty("user.dir")+"\\"+args[0]);
-	//This uses the printers file included in the jar
 	inputAddresses();
 	System.out.println(String.format("%-30s %-16s %-70s %-20s %2s", "Location","IP","Model","Serial","Toner"));
 	for(int i = 0;i < printers.size();i++) {
 		SNMPManager client = new SNMPManager("udp:"+printers.get(i).getIP()+"/161"); // this needs to be looped somehow
-		//TransportMapping transport = client.start();
 		client.start();
 		client.getAsString(printers.get(i));
 		//transport.close();
