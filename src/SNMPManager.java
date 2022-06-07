@@ -11,25 +11,24 @@ import org.snmp4j.smi.*;
 import org.snmp4j.transport.*;
 
 
-public class SNMPManager {
+public class SNMPManager implements Runnable{
 
-Snmp snmp;
-ArrayList<String> addressList;
-ArrayList<Printer> printers;
+private Snmp snmp;
+private ArrayList<String> addressList;
+private ArrayList<Printer> printers;
 /**
 * Constructor
 * @param add
 */
-private SNMPManager()
+public SNMPManager()
 {
 	addressList = new ArrayList<String>();
 	printers = new ArrayList<Printer>();
 	snmp = null;	
 }
 
-public static void main(String[] args){
-	SNMPManager Manager = new SNMPManager();
-	Manager.begin();
+public void run() {
+	begin();
 }
 private void begin() {
 /**
