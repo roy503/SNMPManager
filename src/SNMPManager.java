@@ -43,6 +43,7 @@ private void begin() {
 	}
 	try {
 		snmp.close();
+		System.exit(0);
 	} catch (IOException e) {
 		// Error
 		System.out.println("Error trying to close() snmp");
