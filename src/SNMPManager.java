@@ -41,7 +41,6 @@ public static void main(String[] args) throws IOException {
 		SNMPManager client = new SNMPManager("udp:"+printers.get(i).getIP()+"/161"); // this needs to be looped somehow
 		client.start();
 		client.getAsString(printers.get(i));
-		//transport.close();
 		client.snmp.close();
 		
 	}
