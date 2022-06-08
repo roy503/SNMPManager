@@ -37,7 +37,7 @@ private void begin() {
 */
 	inputAddresses();
 	start();
-	System.out.println(String.format("%-30s %-16s %-70s %-20s %2s", "Location","IP","Model","Serial","Toner"));
+	System.out.println(String.format("%-30s %-16s %-70s %-20s %2s", "Location","IP","Model","Serial","Toner (B C M Y)"));
 	for(int i = 0;i < printers.size();i++) {
 		getAsString(printers.get(i));
 	}
@@ -98,39 +98,62 @@ private void getAsString(Printer obj){
 
 	//These care custom IP settings for the printers on my network
 	ResponseEvent<?> event;
-	//colour printer
-	if(("10.214.192.87").equals(obj.getIP()) || ("10.214.192.95").equals(obj.getIP())) {
-		event = get(new OID[] {new OID(".1.3.6.1.2.1.25.3.2.1.3.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.1"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.1"),
-				new OID(".1.3.6.1.2.1.43.11.1.1.9.1.2"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.2"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.3"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.3"),
-				new OID(".1.3.6.1.2.1.43.11.1.1.9.1.4"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.4"),new OID(".1.3.6.1.2.1.1.6.0"),new OID(".1.3.6.1.2.1.43.5.1.1.17.1")}, obj);	
+	if(("10.214.192.87").equals(obj.getIP()) || ("10.214.192.95").equals(obj.getIP()) || ("10.214.192.88").equals(obj.getIP())) {
+		//colour printers
+		if(("10.214.192.88").equals(obj.getIP())) {
+			//V1 printer LOTE
+			event = getV1(new OID[] {new OID(".1.3.6.1.2.1.25.3.2.1.3.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.1"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.1"),
+					new OID(".1.3.6.1.2.1.43.11.1.1.9.1.2"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.2"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.3"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.3"),
+					new OID(".1.3.6.1.2.1.43.11.1.1.9.1.4"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.4"),new OID(".1.3.6.1.2.1.1.6.0"),new OID(".1.3.6.1.2.1.43.5.1.1.17.1")}, obj);
+			//0 name, 1 black curr, 2 black max, 3 cyan curr, 4 cyan max, 5 magenta curr, 6 magenta max, 7 yellow curr, 8 yellow max, 9 location, 10 serial
+		}
+		else if(("10.214.192.87").equals(obj.getIP())){
+			//V2C Lexmark Art
+		event = getV2C(new OID[] {new OID(".1.3.6.1.2.1.25.3.2.1.3.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.4"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.4"),
+				new OID(".1.3.6.1.2.1.43.11.1.1.9.1.1"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.2"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.2"),
+				new OID(".1.3.6.1.2.1.43.11.1.1.9.1.3"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.3"),new OID(".1.3.6.1.2.1.1.6.0"),new OID(".1.3.6.1.2.1.43.5.1.1.17.1")}, obj);	
 		//0 name, 1 cyan curr, 2 cyan max, 3 magenta curr, 4 magenta max, 5yellow curr, 6yellow max, 7 black curr, 8 black max, 9 location, 10 serial
+		//0 name, 1 black curr, 2 black max, 3 cyan curr, 4 cyan max, 5 magenta curr, 6 magenta max, 7 yellow curr, 8 yellow max, 9 location, 10 serial
+		}
+		else {
+			//V2C careers colour
+			event = getV2C(new OID[] {new OID(".1.3.6.1.2.1.25.3.2.1.3.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.1"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.1"),
+					new OID(".1.3.6.1.2.1.43.11.1.1.9.1.2"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.2"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.3"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.3"),
+					new OID(".1.3.6.1.2.1.43.11.1.1.9.1.4"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.4"),new OID(".1.3.6.1.2.1.1.6.0"),new OID(".1.3.6.1.2.1.43.5.1.1.17.1")}, obj);
+			//0 name, 1 black curr, 2 black max, 3 cyan curr, 4 cyan max, 5 magenta curr, 6 magenta max, 7 yellow curr, 8 yellow max, 9 location, 10 serial
+		}
 	}
-	//Print room printers use 2 toners, K1 and K2
 	else if(("10.214.192.79").equals(obj.getIP()) || ("10.214.192.91").equals(obj.getIP())){
-		event = get(new OID[] { new OID(".1.3.6.1.2.1.25.3.2.1.3.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.30"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.30"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.31"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.31"), new OID(".1.3.6.1.2.1.1.6.0"),new OID(".1.3.6.1.2.1.43.5.1.1.17.1")}, obj);
+		//Print room printers use 2 toners, K1 and K2
+		event = getV2C(new OID[] { new OID(".1.3.6.1.2.1.25.3.2.1.3.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.30"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.30"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.31"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.31"), new OID(".1.3.6.1.2.1.1.6.0"),new OID(".1.3.6.1.2.1.43.5.1.1.17.1")}, obj);
 		//0 name, 1 K1 Curr, 2 K1 Max, 3 K2 Curr, 4 K2 Max, 5 Location, 6 Serial
-	}
-	//Office label printer
+	}	
 	else if(("10.214.192.250").equals(obj.getIP())) {
-		event = get(new OID[] { new OID(".1.3.6.1.2.1.25.3.2.1.3.1"), new OID(".1.3.6.1.2.1.1.6.0")}, obj);
+		//Office label printer
+		event = getV1(new OID[] { new OID(".1.3.6.1.2.1.25.3.2.1.3.1"), new OID(".1.3.6.1.2.1.1.6.0")}, obj);
 		//0 desc, 1 location
 	}
-	//All other printers
+	
+	else if(("10.214.192.76").equals(obj.getIP()) || ("10.214.192.64").equals(obj.getIP()) || ("10.214.192.97").equals(obj.getIP())) {
+		//V1 SNMP printers
+		event = getV1(new OID[] { new OID(".1.3.6.1.2.1.25.3.2.1.3.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.1"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.1"),new OID(".1.3.6.1.2.1.1.6.0"),new OID(".1.3.6.1.2.1.43.5.1.1.17.1")}, obj);
+	}
 	else {
-		event = get(new OID[] { new OID(".1.3.6.1.2.1.25.3.2.1.3.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.1"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.1"),new OID(".1.3.6.1.2.1.1.6.0"),new OID(".1.3.6.1.2.1.43.5.1.1.17.1")}, obj);
+		//All other printers
+		event = getV2C(new OID[] { new OID(".1.3.6.1.2.1.25.3.2.1.3.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.1"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.1"),new OID(".1.3.6.1.2.1.1.6.0"),new OID(".1.3.6.1.2.1.43.5.1.1.17.1")}, obj);
 		// 0 name, 1 tonerCurr, 2 tonerMax, 3 location, 4 serial
 	}
 	//not sure if this toner works for colour printers?
 	if(event.getResponse() != null) {
 		//Print room printers
-		if(("10.214.192.87").equals(obj.getIP()) || ("10.214.192.95").equals(obj.getIP()) ) {
+		if(("10.214.192.87").equals(obj.getIP()) || ("10.214.192.95").equals(obj.getIP()) || ("10.214.192.88").equals(obj.getIP())) {
 			//colour printer
 			//0 name, 1 cyan curr, 2 cyan max, 3 magenta curr, 4 magenta max, 5yellow curr, 6yellow max, 7 black curr, 8 black max, 9 location, 10 serial
 			obj.setName(event.getResponse().get(0).getVariable().toString());
-			obj.setCyan(Math.round(Float.parseFloat(event.getResponse().get(1).getVariable().toString())/Float.parseFloat(event.getResponse().get(2).getVariable().toString())*100));
-			obj.setMagenta(Math.round(Float.parseFloat(event.getResponse().get(3).getVariable().toString())/Float.parseFloat(event.getResponse().get(4).getVariable().toString())*100));
-			obj.setYellow(Math.round(Float.parseFloat(event.getResponse().get(5).getVariable().toString())/Float.parseFloat(event.getResponse().get(6).getVariable().toString())*100));
-			obj.setBlack(Math.round(Float.parseFloat(event.getResponse().get(7).getVariable().toString())/Float.parseFloat(event.getResponse().get(8).getVariable().toString())*100));
+			obj.setCyan(Math.round(Float.parseFloat(event.getResponse().get(3).getVariable().toString())/Float.parseFloat(event.getResponse().get(4).getVariable().toString())*100));
+			obj.setMagenta(Math.round(Float.parseFloat(event.getResponse().get(5).getVariable().toString())/Float.parseFloat(event.getResponse().get(6).getVariable().toString())*100));
+			obj.setYellow(Math.round(Float.parseFloat(event.getResponse().get(7).getVariable().toString())/Float.parseFloat(event.getResponse().get(8).getVariable().toString())*100));
+			obj.setBlack(Math.round(Float.parseFloat(event.getResponse().get(1).getVariable().toString())/Float.parseFloat(event.getResponse().get(2).getVariable().toString())*100));
 			if(("10.214.192.95").equals(obj.getIP())) {
 				obj.setLocation("Careers Office Colour (FR0037)");
 			}
@@ -198,7 +221,22 @@ private void getAsString(Printer obj){
 * @return
 * @throws IOException
 */
-private ResponseEvent<?> get(OID oids[], Printer obj){
+private ResponseEvent<?> getV1(OID oids[], Printer obj){
+	PDU pdu = new PDU();
+	for (OID oid : oids) {
+		pdu.add(new VariableBinding(oid));
+	}
+	pdu.setType(PDU.GET);
+	ResponseEvent<?> event = null;
+	try {
+		event = snmp.send(pdu, getTarget(obj, 1), null);
+	} catch (IOException e) {
+		// Error on V1
+	}
+	return event;
+}
+
+private ResponseEvent<?> getV2C(OID oids[], Printer obj){
 	PDU pdu = new PDU();
 	for (OID oid : oids) {
 		pdu.add(new VariableBinding(oid));
@@ -210,27 +248,6 @@ private ResponseEvent<?> get(OID oids[], Printer obj){
 	} catch (IOException e) {
 		// Error on V2
 	}
-	//try v2c
-	if(event.getResponse() != null) {
-		//v2c works
-		return event;
-	}
-	else {
-		//v2c timed out
-		try {
-			event = snmp.send(pdu, getTarget(obj, 1), null);
-		} catch (IOException e) {
-			// Error on V1
-		}
-		if(event.getResponse() != null) {
-			//v1 works
-			return event;
-		}
-		else {
-			//v1 timed out
-		}
-	}
-	//GET timed out
 	return event;
 }
 
