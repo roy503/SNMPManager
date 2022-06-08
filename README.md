@@ -1,5 +1,5 @@
 # SNMPClient
-Printer SNMP Client
+Printer SNMP Manager
 
 Get printer info from list of networked printer IP addresses.
 
