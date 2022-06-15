@@ -134,7 +134,7 @@ private void getAsString(Printer obj){
 		//0 desc, 1 location
 	}
 	
-	else if(("10.214.192.76").equals(obj.getIP()) || ("10.214.192.64").equals(obj.getIP()) || ("10.214.192.97").equals(obj.getIP())) {
+	else if(("10.214.192.76").equals(obj.getIP()) || ("10.214.192.64").equals(obj.getIP()) || ("10.214.192.65").equals(obj.getIP())) {
 		//V1 SNMP printers
 		event = getV1(new OID[] { new OID(".1.3.6.1.2.1.25.3.2.1.3.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.1"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.1"),new OID(".1.3.6.1.2.1.1.6.0"),new OID(".1.3.6.1.2.1.43.5.1.1.17.1")}, obj);
 	}
@@ -183,7 +183,7 @@ private void getAsString(Printer obj){
 			obj.setLabelPrinter();
 			System.out.println(obj.toString());
 		}
-		else if(("10.214.192.76").equals(obj.getIP()) || ("10.214.192.97").equals(obj.getIP())) {
+		else if(("10.214.192.76").equals(obj.getIP()) || ("10.214.192.65").equals(obj.getIP())) {
 			//p2015 printers location fix
 			float tonerP = Float.parseFloat(event.getResponse().get(1).getVariable().toString())/Float.parseFloat(event.getResponse().get(2).getVariable().toString());
 			obj.setBlack(Math.round(tonerP*100));
@@ -191,7 +191,7 @@ private void getAsString(Printer obj){
 			if(("10.214.192.76").equals(obj.getIP())) {
 				obj.setLocation("LAST Office (FR0030)");
 			}
-			else if(("10.214.192.97").equals(obj.getIP())) {
+			else if(("10.214.192.65").equals(obj.getIP())) {
 				obj.setLocation("TSO Office (FR0091)");
 			}
 			obj.setSerial(event.getResponse().get(4).getVariable().toString());
