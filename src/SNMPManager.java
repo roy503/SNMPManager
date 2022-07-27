@@ -59,7 +59,7 @@ private void begin() {
 }
 
 private void parsePrintServer() {
-	//Retrieves ip address line by line from txt file
+	//Retrieves ip address line by line from txt file printserver.txt
 	try(InputStream in = SNMPManager.class.getResourceAsStream("printserver.txt");
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-16"))){
 		
