@@ -1,8 +1,13 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.snmp4j.*;
 import org.snmp4j.event.*;
@@ -35,22 +40,48 @@ private void begin() {
 * Port 161 is used for Read and Other operations
 * Port 162 is used for the trap generation
 */
+	parsePrintServer();
 	inputAddresses();
 	start();
-	System.out.println(String.format("%-30s %-16s %-70s %-20s %2s", "Location","IP","Model","Serial","Toner (B C M Y)"));
-	for(int i = 0;i < printers.size();i++) {
-		getAsString(printers.get(i));
-	}
-	try {
+	System.out.println(String.format("%-30s %-16s %-70s %-20s %2s","Location","IP","Model","Serial","Toner (B C M Y)")); 
+	for(int i = 0;i < printers.size();i++) { 
+		getAsString(printers.get(i)); 
+	} 
+	try { 
 		snmp.close();
-		System.exit(0);
-	} catch (IOException e) {
+		System.exit(0); 
+	} catch (IOException e) { 
 		// Error
-		System.out.println("Error trying to close() snmp");
+		System.out.println("Error trying to close() snmp"); 
+		System.exit(1); 
+	}
+	 
+}
+
+private void parsePrintServer() {
+	//Retrieves ip address line by line from txt file
+	try(InputStream in = SNMPManager.class.getResourceAsStream("printserver.txt");
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-16"))){
+		
+		BufferedWriter bw1 = new BufferedWriter(new FileWriter(new File("printers.txt"), false));
+		
+		String line;
+		while((line = reader.readLine()) != null) {
+			Pattern p = Pattern.compile("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+			Matcher m = p.matcher(line);
+			while(m.find()) {
+				bw1.write(m.group(0));
+				bw1.newLine();			
+			}
+		}
+		bw1.close();
+		
+	} catch (IOException | NullPointerException e) {
+		//error
+		System.out.println("Can't find printserver.txt");
 		System.exit(1);
 	}
 }
-
 private void inputAddresses(){
 	//input addresses from text file
 	try(InputStream in = SNMPManager.class.getResourceAsStream("printers.txt");
@@ -134,7 +165,7 @@ private void getAsString(Printer obj){
 		//0 desc, 1 location
 	}
 	
-	else if(("10.214.192.76").equals(obj.getIP()) || ("10.214.192.64").equals(obj.getIP()) || ("10.214.192.65").equals(obj.getIP())) {
+	else if(("10.214.192.76").equals(obj.getIP()) || ("10.214.192.64").equals(obj.getIP()) || ("10.214.192.97").equals(obj.getIP())|| ("10.214.192.65").equals(obj.getIP())) {
 		//V1 SNMP printers
 		event = getV1(new OID[] { new OID(".1.3.6.1.2.1.25.3.2.1.3.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.1"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.1"),new OID(".1.3.6.1.2.1.1.6.0"),new OID(".1.3.6.1.2.1.43.5.1.1.17.1")}, obj);
 	}
@@ -183,7 +214,7 @@ private void getAsString(Printer obj){
 			obj.setLabelPrinter();
 			System.out.println(obj.toString());
 		}
-		else if(("10.214.192.76").equals(obj.getIP()) || ("10.214.192.65").equals(obj.getIP())) {
+		else if(("10.214.192.76").equals(obj.getIP()) || ("10.214.192.97").equals(obj.getIP())|| ("10.214.192.65").equals(obj.getIP())) {
 			//p2015 printers location fix
 			float tonerP = Float.parseFloat(event.getResponse().get(1).getVariable().toString())/Float.parseFloat(event.getResponse().get(2).getVariable().toString());
 			obj.setBlack(Math.round(tonerP*100));
@@ -191,8 +222,11 @@ private void getAsString(Printer obj){
 			if(("10.214.192.76").equals(obj.getIP())) {
 				obj.setLocation("LAST Office (FR0030)");
 			}
-			else if(("10.214.192.65").equals(obj.getIP())) {
+			else if(("10.214.192.97").equals(obj.getIP())) {
 				obj.setLocation("TSO Office (FR0091)");
+			}
+			else if(("10.214.192.65").equals(obj.getIP())) {
+				obj.setLocation("Print Station 1");
 			}
 			obj.setSerial(event.getResponse().get(4).getVariable().toString());
 			System.out.println(obj.toString());
