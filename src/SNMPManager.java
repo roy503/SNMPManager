@@ -223,7 +223,7 @@ private void getAsString(Printer obj){
 				obj.setLocation("LAST Office (FR0030)");
 			}
 			else if(("10.214.192.97").equals(obj.getIP())) {
-				obj.setLocation("TSO Office (FR0091)");
+				obj.setLocation("GA Office (HR0007)");
 			}
 			else if(("10.214.192.65").equals(obj.getIP())) {
 				obj.setLocation("Print Station 1");
