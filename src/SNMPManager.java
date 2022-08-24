@@ -220,13 +220,13 @@ private void getAsString(Printer obj){
 			obj.setBlack(Math.round(tonerP*100));
 			obj.setName(event.getResponse().get(0).getVariable().toString());
 			if(("10.214.192.76").equals(obj.getIP())) {
-				obj.setLocation("LAST Office (FR0030)");
+				obj.setLocation("Print Station 1");
 			}
 			else if(("10.214.192.97").equals(obj.getIP())) {
 				obj.setLocation("GA Office (HR0007)");
 			}
 			else if(("10.214.192.65").equals(obj.getIP())) {
-				obj.setLocation("Print Station 1");
+				obj.setLocation("LaST Office (FR0030)");
 			}
 			obj.setSerial(event.getResponse().get(4).getVariable().toString());
 			System.out.println(obj.toString());
