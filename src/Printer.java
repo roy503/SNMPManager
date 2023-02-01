@@ -6,6 +6,15 @@ private boolean colour = false, printRoom = false, offline = false, labelPrinter
 	
 public Printer(String address) {
 	this.address = address;
+	name = "";
+	serial = "";
+	location = "";
+	K1 = 0;
+	K2 = 0;
+	cyan = 0;
+	magenta = 0;
+	yellow = 0;
+	black = 0;
 }
 
 public String getIP() {
@@ -126,7 +135,7 @@ public String toString() {
 		out = String.format("%-30s %-16s %-70s %-20s %2d%% %2d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getK1(), this.getK2());
 	}
 	else if(this.isLabelPrinter()) {
-		out = String.format("%-30s %-16s %-70s", this.getLocation(), this.getIP(), this.getName());
+		out = String.format("%-30s %-16s %-70s %-20s", this.getLocation(), this.getIP(), this.getName(), this.getSerial());
 	}
 	else if(this.isOffline()) {
 		out = String.format("%-30s %-14s", "Printer Offline", this.getIP());

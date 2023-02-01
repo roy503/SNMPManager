@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,7 +25,7 @@ private ArrayList<String> addressList;
 private ArrayList<Printer> printers;
 /**
 * Constructor
-* @param add
+* 
 */
 public SNMPManager()
 {
@@ -40,23 +42,39 @@ private void begin() {
 * Port 161 is used for Read and Other operations
 * Port 162 is used for the trap generation
 */
+	System.out.println("Gaethring IP Addresses...");
 	parsePrintServer();
 	inputAddresses();
 	start();
-	System.out.println(String.format("%-30s %-16s %-70s %-20s %2s","Location","IP","Model","Serial","Toner (B C M Y)")); 
+	System.out.print("Sending SNMP Messages");
 	for(int i = 0;i < printers.size();i++) { 
-		getAsString(printers.get(i)); 
-	} 
+		getAsString(printers.get(i));
+		System.out.print(".");
+	}
+	System.out.println("");
 	try { 
 		snmp.close();
-		System.exit(0); 
 	} catch (IOException e) { 
 		// Error
 		System.out.println("Error trying to close() snmp"); 
 		System.exit(1); 
 	}
-	 
+	//Sorts ascending order by black ink levels
+	Collections.sort(printers, new Comparator<Printer>(){
+		public int compare(Printer p1, Printer p2) {
+			return p1.getBlack() - p2.getBlack();
+		}
+	});
+	System.out.println(String.format("%-30s %-16s %-70s %-20s %2s","Location","IP","Model","Serial","Toner (B C M Y)"));
+	//Make a print string instead?
+	for(int i = 0; i < printers.size(); i ++) {
+		System.out.println(printers.get(i).toString());
+	}
+	System.exit(0);
 }
+
+
+
 
 private void parsePrintServer() {
 	//Retrieves ip address line by line from txt file printserver.txt
@@ -129,7 +147,7 @@ private void getAsString(Printer obj){
 
 	//These care custom IP settings for the printers on my network
 	ResponseEvent<?> event;
-	if(("10.214.192.87").equals(obj.getIP()) || ("10.214.192.95").equals(obj.getIP()) || ("10.214.192.88").equals(obj.getIP())) {
+	if(("10.214.192.87").equals(obj.getIP()) || ("10.214.192.95").equals(obj.getIP()) || ("10.214.192.88").equals(obj.getIP()) || ("10.214.192.90").equals(obj.getIP()) || ("10.214.192.94").equals(obj.getIP())) {
 		//colour printers
 		if(("10.214.192.88").equals(obj.getIP())) {
 			//V1 printer LOTE
@@ -146,6 +164,19 @@ private void getAsString(Printer obj){
 		//0 name, 1 cyan curr, 2 cyan max, 3 magenta curr, 4 magenta max, 5yellow curr, 6yellow max, 7 black curr, 8 black max, 9 location, 10 serial
 		//0 name, 1 black curr, 2 black max, 3 cyan curr, 4 cyan max, 5 magenta curr, 6 magenta max, 7 yellow curr, 8 yellow max, 9 location, 10 serial
 		}
+		else if(("10.214.192.90").equals(obj.getIP())){
+			//V2C TAS
+		event = getV2C(new OID[] {new OID(".1.3.6.1.2.1.25.3.2.1.3.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.4"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.4"),
+				new OID(".1.3.6.1.2.1.43.11.1.1.9.1.1"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.2"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.2"),
+				new OID(".1.3.6.1.2.1.43.11.1.1.9.1.3"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.3"),new OID(".1.3.6.1.2.1.1.6.0"),new OID(".1.3.6.1.2.1.43.5.1.1.17.1")}, obj);
+		}
+		else if(("10.214.192.94").equals(obj.getIP())){
+			//V2C Principal
+		event = getV2C(new OID[] {new OID(".1.3.6.1.2.1.25.3.2.1.3.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.4"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.4"),
+				new OID(".1.3.6.1.2.1.43.11.1.1.9.1.1"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.2"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.2"),
+				new OID(".1.3.6.1.2.1.43.11.1.1.9.1.3"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.3"),new OID(".1.3.6.1.2.1.1.6.0"),new OID(".1.3.6.1.2.1.43.5.1.1.17.1")}, obj);	
+		}
+		
 		else {
 			//V2C careers colour
 			event = getV2C(new OID[] {new OID(".1.3.6.1.2.1.25.3.2.1.3.1"),new OID(".1.3.6.1.2.1.43.11.1.1.9.1.1"),new OID(".1.3.6.1.2.1.43.11.1.1.8.1.1"),
@@ -164,6 +195,11 @@ private void getAsString(Printer obj){
 		event = getV1(new OID[] { new OID(".1.3.6.1.2.1.25.3.2.1.3.1"), new OID(".1.3.6.1.2.1.1.6.0")}, obj);
 		//0 desc, 1 location
 	}
+	else if(("10.214.192.215").equals(obj.getIP())) {
+		//Office label printer
+		event = getV2C(new OID[] { new OID(".1.3.6.1.2.1.25.3.2.1.3.1"),new OID(".1.3.6.1.2.1.1.6.0"),new OID(".1.3.6.1.2.1.43.5.1.1.17.1")}, obj);
+		//0 name, 1 location, 2 serial
+	}
 	
 	else if(("10.214.192.76").equals(obj.getIP()) || ("10.214.192.64").equals(obj.getIP()) || ("10.214.192.97").equals(obj.getIP())|| ("10.214.192.65").equals(obj.getIP())) {
 		//V1 SNMP printers
@@ -177,7 +213,7 @@ private void getAsString(Printer obj){
 	//not sure if this toner works for colour printers?
 	if(event.getResponse() != null) {
 		//Print room printers
-		if(("10.214.192.87").equals(obj.getIP()) || ("10.214.192.95").equals(obj.getIP()) || ("10.214.192.88").equals(obj.getIP())) {
+		if(("10.214.192.87").equals(obj.getIP()) || ("10.214.192.95").equals(obj.getIP()) || ("10.214.192.88").equals(obj.getIP()) || ("10.214.192.90").equals(obj.getIP()) || ("10.214.192.94").equals(obj.getIP())) {
 			//colour printer
 			//0 name, 1 cyan curr, 2 cyan max, 3 magenta curr, 4 magenta max, 5yellow curr, 6yellow max, 7 black curr, 8 black max, 9 location, 10 serial
 			obj.setName(event.getResponse().get(0).getVariable().toString());
@@ -193,7 +229,6 @@ private void getAsString(Printer obj){
 			}
 			obj.setSerial(event.getResponse().get(10).getVariable().toString());
 			obj.setColour();
-			System.out.println(obj.toString());
 		}
 		else if(("10.214.192.79").equals(obj.getIP()) || ("10.214.192.91").equals(obj.getIP())) {
 			//print room printers
@@ -205,14 +240,18 @@ private void getAsString(Printer obj){
 			obj.setLocation(event.getResponse().get(5).getVariable().toString());
 			obj.setSerial(event.getResponse().get(6).getVariable().toString());
 			obj.setPrintRoom();
-			System.out.println(obj.toString());
 		}
 		//label printer
+		else if(("10.214.192.215").equals(obj.getIP())) {
+			obj.setName(event.getResponse().get(0).getVariable().toString());
+			obj.setLocation(event.getResponse().get(1).getVariable().toString());
+			obj.setSerial(event.getResponse().get(2).getVariable().toString());
+			obj.setLabelPrinter();
+		}
 		else if(("10.214.192.250").equals(obj.getIP())) {
 			obj.setName(event.getResponse().get(0).getVariable().toString());
 			obj.setLocation(event.getResponse().get(1).getVariable().toString());
 			obj.setLabelPrinter();
-			System.out.println(obj.toString());
 		}
 		else if(("10.214.192.76").equals(obj.getIP()) || ("10.214.192.97").equals(obj.getIP())|| ("10.214.192.65").equals(obj.getIP())) {
 			//p2015 printers location fix
@@ -229,7 +268,6 @@ private void getAsString(Printer obj){
 				obj.setLocation("LaST Office (FR0030)");
 			}
 			obj.setSerial(event.getResponse().get(4).getVariable().toString());
-			System.out.println(obj.toString());
 			
 		}
 		else {
@@ -239,14 +277,12 @@ private void getAsString(Printer obj){
 			obj.setName(event.getResponse().get(0).getVariable().toString());
 			obj.setLocation(event.getResponse().get(3).getVariable().toString());
 			obj.setSerial(event.getResponse().get(4).getVariable().toString());
-			System.out.println(obj.toString());
 		}
 	}
 	else {
 		//can't contact printer
 		obj.setOffline();
-		System.out.println(obj.toString());
-		}
+	}
 }
 
 /**
