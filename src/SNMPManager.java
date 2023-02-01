@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,6 +44,7 @@ private void begin() {
 	System.out.println("Gaethring IP Addresses...");
 	parsePrintServer();
 	inputAddresses();
+	System.out.println(printers.size()+" printers found.");
 	start();
 	System.out.print("Sending SNMP Messages");
 	for(int i = 0;i < printers.size();i++) { 
@@ -60,13 +60,16 @@ private void begin() {
 		System.exit(1); 
 	}
 	//Sorts ascending order by black ink levels
-	Collections.sort(printers, new Comparator<Printer>(){
-		public int compare(Printer p1, Printer p2) {
-			return p1.getBlack() - p2.getBlack();
-		}
-	});
+	printers.sort(Comparator.comparing(Printer::isOffline)
+			.thenComparing(Printer::isLabelPrinter)
+			.thenComparing(Printer::isPrintRoom)
+			.thenComparing(Printer::isNotColour)
+			.thenComparingInt(Printer::getBlack));
+	System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
 	System.out.println(String.format("%-30s %-16s %-70s %-20s %2s","Location","IP","Model","Serial","Toner (B C M Y)"));
+	System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
 	//Make a print string instead?
+	//print 
 	for(int i = 0; i < printers.size(); i ++) {
 		System.out.println(printers.get(i).toString());
 	}
@@ -253,7 +256,7 @@ private void getAsString(Printer obj){
 			obj.setLocation(event.getResponse().get(1).getVariable().toString());
 			obj.setLabelPrinter();
 		}
-		else if(("10.214.192.76").equals(obj.getIP()) || ("10.214.192.97").equals(obj.getIP())|| ("10.214.192.65").equals(obj.getIP())) {
+		else if(("10.214.192.76").equals(obj.getIP()) || ("10.214.192.97").equals(obj.getIP()) || ("10.214.192.65").equals(obj.getIP()) || ("10.214.192.71").equals(obj.getIP())) {
 			//p2015 printers location fix
 			float tonerP = Float.parseFloat(event.getResponse().get(1).getVariable().toString())/Float.parseFloat(event.getResponse().get(2).getVariable().toString());
 			obj.setBlack(Math.round(tonerP*100));
@@ -266,6 +269,9 @@ private void getAsString(Printer obj){
 			}
 			else if(("10.214.192.65").equals(obj.getIP())) {
 				obj.setLocation("LaST Office (FR0030)");
+			}
+			else if(("10.214.192.71").equals(obj.getIP())) {
+				obj.setLocation("Front Office Corner (AR0012)");
 			}
 			obj.setSerial(event.getResponse().get(4).getVariable().toString());
 			

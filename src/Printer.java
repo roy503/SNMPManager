@@ -113,6 +113,10 @@ public boolean isColour() {
 	return colour;
 }
 
+public boolean isNotColour() {
+	return !colour;
+}
+
 public boolean isPrintRoom() {
 	return printRoom;
 }
