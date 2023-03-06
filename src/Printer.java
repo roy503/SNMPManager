@@ -133,10 +133,10 @@ public boolean isLabelPrinter() {
 public String toString() {
 	String out = "";
 	if(this.isColour()) {
-		out = String.format("%-30s %-16s %-70s %-20s %2d%% %2d%% %2d%% %2d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getBlack(), this.getCyan(), this.getMagenta(), this.getYellow());
+		out = String.format("%-30s %-16s %-70s %-20s %2d%% %2d%% %2d%% %2d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getBlack(), this.getYellow(), this.getMagenta(), this.getCyan());
 	}
 	else if(this.isPrintRoom()) {
-		out = String.format("%-30s %-16s %-70s %-20s %2d%% %2d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getK1(), this.getK2());
+		out = String.format("%-30s %-16s %-70s %-20s %2d%% %2d%% %2d%% %2d%% %2d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getK1(), this.getK2(), this.getYellow(), this.getMagenta(), this.getCyan());
 	}
 	else if(this.isLabelPrinter()) {
 		out = String.format("%-30s %-16s %-70s %-20s", this.getLocation(), this.getIP(), this.getName(), this.getSerial());
