@@ -133,19 +133,24 @@ public boolean isLabelPrinter() {
 public String toString() {
 	String out = "";
 	if(this.isColour()) {
-		out = String.format("%-30s %-16s %-70s %-20s %2d%% %2d%% %2d%% %2d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getBlack(), this.getYellow(), this.getMagenta(), this.getCyan());
+		out = String.format("%-30s %-16s %-30s %-20s %2d%% %2d%% %2d%% %2d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getBlack(), this.getYellow(), this.getMagenta(), this.getCyan());
 	}
 	else if(this.isPrintRoom()) {
-		out = String.format("%-30s %-16s %-70s %-20s %2d%% %2d%% %2d%% %2d%% %2d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getK1(), this.getK2(), this.getYellow(), this.getMagenta(), this.getCyan());
+		if("10.214.192.91".equals(address)){
+			out = String.format("%-30s %-16s %-30s %-20s %2d%% %2d%% %2d%% %2d%% %2d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getK1(), this.getK2(), this.getYellow(), this.getMagenta(), this.getCyan());
+		}
+		else {
+			out = String.format("%-30s %-16s %-30s %-20s %2d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getBlack());
+		}
 	}
 	else if(this.isLabelPrinter()) {
-		out = String.format("%-30s %-16s %-70s %-20s", this.getLocation(), this.getIP(), this.getName(), this.getSerial());
+		out = String.format("%-30s %-16s %-30s %-20s", this.getLocation(), this.getIP(), this.getName(), this.getSerial());
 	}
 	else if(this.isOffline()) {
 		out = String.format("%-30s %-14s", "Printer Offline", this.getIP());
 	}
 	else {
-		out = String.format("%-30s %-16s %-70s %-20s %2d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getBlack());
+		out = String.format("%-30s %-16s %-30s %-20s %2d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getBlack());
 	}
 	return out;
 }

@@ -66,7 +66,7 @@ private void begin() {
 			.thenComparing(Printer::isNotColour)
 			.thenComparingInt(Printer::getBlack));
 	System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
-	System.out.println(String.format("%-30s %-16s %-70s %-20s %2s","Location","IP","Model","Serial","Toner (B Y M C)"));
+	System.out.println(String.format("%-30s %-16s %-30s %-20s %2s","Location","IP","Model","Serial","Toner (B Y M C)"));
 	System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
 	//Make a print string instead?
 	//print 
@@ -196,7 +196,12 @@ private void getAsString(Printer obj){
 				obj.setLocation(event.getResponse().get(9).getVariable().toString());
 			}
 			obj.setSerial(event.getResponse().get(10).getVariable().toString());
-			obj.setColour();
+			if("10.214.192.79".equals(obj.getIP())) {
+				obj.setPrintRoom();
+			}
+			else {
+				obj.setColour();
+			}
 		}
 		else if(("10.214.192.91").equals(obj.getIP())) {
 			//print room 2
