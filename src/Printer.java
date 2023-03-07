@@ -2,7 +2,7 @@ public class Printer {
 
 private String address, name, serial, location;
 private int K1, K2, cyan, magenta, yellow, black;
-private boolean colour = false, printRoom = false, offline = false, labelPrinter = false;
+private boolean offline = false, colour = false, kprinter = false, labelprinter = false;
 	
 public Printer(String address) {
 	this.address = address;
@@ -93,20 +93,16 @@ public int getYellow() {
 	return yellow;
 }
 
-public void setColour() {
-	colour = true;
-}
-
-public void setPrintRoom() {
-	printRoom = true;
-}
-
 public void setOffline() {
 	offline = true;
 }
 
-public void setLabelPrinter() {
-	labelPrinter = true;
+public boolean isOffline() {
+	return offline;
+}
+
+public void setColour() {
+	colour = true;
 }
 
 public boolean isColour() {
@@ -116,41 +112,40 @@ public boolean isColour() {
 public boolean isNotColour() {
 	return !colour;
 }
-
-public boolean isPrintRoom() {
-	return printRoom;
+public void setkprinter() {
+	kprinter = true;
 }
 
-public boolean isOffline() {
-	return offline;
+public boolean iskprinter() {
+	return kprinter;
+}
+
+public void setLabelPrinter() {
+	labelprinter = true;
 }
 
 public boolean isLabelPrinter() {
-	return labelPrinter;
+	return labelprinter;
 }
 
 @Override
 public String toString() {
 	String out = "";
-	if(this.isColour()) {
-		out = String.format("%-30s %-16s %-30s %-20s %2d%% %2d%% %2d%% %2d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getBlack(), this.getYellow(), this.getMagenta(), this.getCyan());
-	}
-	else if(this.isPrintRoom()) {
-		if("10.214.192.91".equals(address)){
-			out = String.format("%-30s %-16s %-30s %-20s %2d%% %2d%% %2d%% %2d%% %2d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getK1(), this.getK2(), this.getYellow(), this.getMagenta(), this.getCyan());
-		}
-		else {
-			out = String.format("%-30s %-16s %-30s %-20s %2d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getBlack());
-		}
-	}
-	else if(this.isLabelPrinter()) {
-		out = String.format("%-30s %-16s %-30s %-20s", this.getLocation(), this.getIP(), this.getName(), this.getSerial());
-	}
-	else if(this.isOffline()) {
+	if(this.isOffline()) {
 		out = String.format("%-30s %-14s", "Printer Offline", this.getIP());
 	}
+	else if(address.equals("10.214.192.215") || address.equals("10.214.192.250")) {
+		out = String.format("%-30s %-16s %-30s %-20s",this.getLocation(), this.getIP(), this.getName(), this.getSerial());
+	}
+	else if(this.iskprinter()) {
+		out = String.format("%-30s %-16s %-30s %-20s %3d%% %3d%% %3d%% %3d%% %4d%% %3d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getBlack(), this.getYellow(), this.getMagenta(), this.getCyan(), this.getK1(), this.getK2());
+	}
+	else if(this.isColour())
+	{
+		out = String.format("%-30s %-16s %-30s %-20s %3d%% %3d%% %3d%% %3d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getBlack(), this.getYellow(), this.getMagenta(), this.getCyan());
+	}
 	else {
-		out = String.format("%-30s %-16s %-30s %-20s %2d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getBlack());
+		out = String.format("%-30s %-16s %-30s %-20s %3d%%", this.getLocation(), this.getIP(), this.getName(), this.getSerial(), this.getBlack());
 	}
 	return out;
 }
