@@ -46,12 +46,15 @@ private void begin() {
 	inputAddresses();
 	System.out.println(printers.size()+" printers found.");
 	start();
-	System.out.print("Sending SNMP Messages");
+	System.out.println("Sending SNMP Messages");
+	String progressBar = "|                                   |";
+	System.out.print(progressBar+"\r");
 	for(int i = 0;i < printers.size();i++) { 
 		getAsString(printers.get(i));
-		System.out.print(".");
+		progressBar = progressBar.substring(0, i+1) +'=' + progressBar.substring(i+2);
+		System.out.print(progressBar+"\r");
 	}
-	System.out.println("");
+	System.out.println("\nDone");
 	try { 
 		snmp.close();
 	} catch (IOException e) { 
@@ -112,6 +115,7 @@ private void inputAddresses(){
 			addressList.add(line);
 			printers.add(newPrinter);
 		}
+		reader.close();
 	} catch (IOException | NullPointerException e) {
 		//error
 		System.out.println("Can't find printers.txt");
