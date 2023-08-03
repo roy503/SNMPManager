@@ -49,12 +49,12 @@ private void begin() {
 	//System.out.println(printers.size()+" printers found.");
 	start();
 	//System.out.println("Sending SNMP Messages");
-	String progressBar = "|                                   |";
-	System.out.print(progressBar+"\r");
+	//String progressBar = "|                                   |";
+	//System.out.print(progressBar+"\r");
 	for(int i = 0;i < printers.size();i++) { 
 		getAsString(printers.get(i));
-		progressBar = progressBar.substring(0, i+1) +'=' + progressBar.substring(i+2);
-		System.out.print(progressBar+"\r");
+		//progressBar = progressBar.substring(0, i+1) +'=' + progressBar.substring(i+2);
+		//System.out.print(progressBar+"\r");
 	}
 	//System.out.println("\nDone");
 	try { 
