@@ -150,4 +150,10 @@ public String toString() {
 	return out;
 }
 
+public String[] tocsv()
+{
+	String[] data = {location,address,name,serial,Integer.toString(black),Integer.toString(yellow),Integer.toString(magenta),Integer.toString(cyan),Integer.toString(K1),Integer.toString(K2)};
+	return data;
+}
+
 }

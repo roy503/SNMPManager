@@ -16,6 +16,8 @@ import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.smi.*;
 import org.snmp4j.transport.*;
 
+import com.opencsv.CSVWriter;
+
 
 public class SNMPManager implements Runnable{
 
@@ -41,12 +43,12 @@ private void begin() {
 * Port 161 is used for Read and Other operations
 * Port 162 is used for the trap generation
 */
-	System.out.println("Gaethring IP Addresses...");
+	//System.out.println("Gaethring IP Addresses...");
 	parsePrintServer();
 	inputAddresses();
-	System.out.println(printers.size()+" printers found.");
+	//System.out.println(printers.size()+" printers found.");
 	start();
-	System.out.println("Sending SNMP Messages");
+	//System.out.println("Sending SNMP Messages");
 	String progressBar = "|                                   |";
 	System.out.print(progressBar+"\r");
 	for(int i = 0;i < printers.size();i++) { 
@@ -54,7 +56,7 @@ private void begin() {
 		progressBar = progressBar.substring(0, i+1) +'=' + progressBar.substring(i+2);
 		System.out.print(progressBar+"\r");
 	}
-	System.out.println("\nDone");
+	//System.out.println("\nDone");
 	try { 
 		snmp.close();
 	} catch (IOException e) { 
@@ -63,20 +65,42 @@ private void begin() {
 		System.exit(1); 
 	}
 	//Sorts ascending order by black ink levels
-	//"%-30s %-16s %-30s %-20s %2d%% %2d%% %2d%% %2d%% %2d%% %2d%%
 	printers.sort(Comparator.comparing(Printer::isOffline)
 			.thenComparing(Printer::isLabelPrinter)
 			.thenComparing(Printer::iskprinter)
 			.thenComparing(Printer::isNotColour)
 			.thenComparingInt(Printer::getBlack));
-	System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
-	System.out.println(String.format("%-30s %-16s %-30s %-22s %3s","Location","IP","Model","Serial","B    Y    M    C      K1     K2"));
-	System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
+	//System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
+	//System.out.println(String.format("%-30s %-16s %-30s %-22s %3s","Location","IP","Model","Serial","B    Y    M    C      K1     K2"));
+	//System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
 	//Make a print string instead?
 	//print 
-	for(int i = 0; i < printers.size(); i ++) {
-		System.out.println(printers.get(i).toString());
-	}
+	File file = new File("C:/Users/rtoy1/Desktop/Printers.csv");
+	try {
+		 // create FileWriter object with file as parameter
+        FileWriter outputfile = new FileWriter(file);
+  
+        // create CSVWriter object filewriter object as parameter
+        CSVWriter writer = new CSVWriter(outputfile);
+  
+        // adding header to csv
+        String[] header = { "Location", "IP","Name","Serial","Black", "Yellow", "Magenta", "Cyan", "K1", "K2" };
+        writer.writeNext(header);
+  
+        // add data to csv
+        
+        for(int i = 0; i < printers.size(); i ++) {
+    		//System.out.println(printers.get(i).toString());
+    		writer.writeNext(printers.get(i).tocsv());
+    	}
+        // closing writer connection
+        writer.close();
+    }
+    catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+	
 	System.exit(0);
 }
 

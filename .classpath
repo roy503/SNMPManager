@@ -7,5 +7,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/snmp4j-3.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/opencsv-5.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
