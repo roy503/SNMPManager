@@ -75,7 +75,7 @@ private void begin() {
 	//System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
 	//Make a print string instead?
 	//print 
-	File file = new File("C:/Users/rtoy1/Desktop/Printers.csv");
+	File file = new File("C:/CheckToner/Printers.csv");
 	try {
 		 // create FileWriter object with file as parameter
         FileWriter outputfile = new FileWriter(file);
