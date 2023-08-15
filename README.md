@@ -5,14 +5,16 @@ Get printer info from print server.
 
 TO USE:
 Export as runnable Jar
-Make a Powershell File (Make sure you complete the print server pc name and path to jar):
-  Get-PrinterPort -ComputerName (printserver) > "C:\Pathtojar\printserver.txt"
+Make a Powershell File "GetPrinters.ps1" (Make sure to add the print server pc name):
+  Get-PrinterPort -ComputerName (printserver) > "$PSScriptRoot\printserver.txt"
   
-run via .bat file (make sure you complete the file path):
+Make a "run.bat" file:
   @echo off
-  Powershell -NoProfile -ExecutionPolicy Bypass -Command "& 'C:\pathto\powershellfile.ps1'"
-  cd "C:\pathtojar"
-  "%JAVA_HOME%\bin\java.exe" -jar "C:\pathtojar\SNMPManager.jar"
+  Powershell -NoProfile -ExecutionPolicy Bypass -Command "& '%~dp0\GetPrinters.ps1'"
+  cd %~dp0
+  "%JAVA_HOME%\bin\java.exe" -jar "%~dp0\SNMPManager.jar"
+
+Put GetPrinters.ps1, run.bat and SNMPManager.jar in the same directory, and run "run.bat".
 
 CURRENT:
 
