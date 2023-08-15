@@ -75,7 +75,12 @@ private void begin() {
 	//System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
 	//Make a print string instead?
 	//print 
-	File file = new File("C:/CheckToner/Printers.csv");
+	String path = "";
+	File file = null;
+	file = new File(ClassLoader.getSystemClassLoader().getResource(".").getPath()+"printers.csv");
+	path = ClassLoader.getSystemClassLoader().getResource(".").getPath()+"printers.csv";
+	if(path.startsWith("file:/")) path = path.substring(6,path.length());
+	System.out.println(path);
 	try {
 		 // create FileWriter object with file as parameter
         FileWriter outputfile = new FileWriter(file);
@@ -97,7 +102,6 @@ private void begin() {
         writer.close();
     }
     catch (IOException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
     }
 	
