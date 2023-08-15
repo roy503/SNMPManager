@@ -1,33 +1,29 @@
-# SNMPManager
+# SNMPManager - Print Server version
 Printer SNMP Manager
 
-Get printer info from list of networked printer IP addresses.
+Get printer info from print server.
 
 TO USE:
-Make a txt file that is a single list of IP addresses, one address per line.
-Name it "printers.txt" and place it in src
 Export as runnable Jar
-run via .bat file:
-
-@echo off
-java -jar SNMPClient.jar
-@pause
+Make a Powershell File (Make sure you complete the print server pc name and path to jar):
+  Get-PrinterPort -ComputerName (printserver) > "C:\Pathtojar\printserver.txt"
+  
+run via .bat file (make sure you complete the file path):
+  @echo off
+  Powershell -NoProfile -ExecutionPolicy Bypass -Command "& 'C:\pathto\powershellfile.ps1'"
+  cd "C:\pathtojar"
+  "%JAVA_HOME%\bin\java.exe" -jar "C:\pathtojar\SNMPManager.jar"
 
 CURRENT:
 
 set to SNMP V2C, if it fails it will use V1.
-prints to console.
+outputs printer info in csv format:
+Location,IP,Name,Serial,Black,Yellow,Magenta,Cyan,K1,K2
+
+I use the csv to populate a java servlet page on a tomcat server to view the data in the local network.
 
 
 Might need to edit code a bit if you have colour / label / multi function printers.
-
-TODO:
-
-Print an XML file of printer stats. create css to display the XML file.
-
-Potentially use different input method, currently using txt file with each ip address on new line. Is it possible to search AD for all printers in certain subnet?
-
-Run method at set intervals to monitor (or use some sort of windows scheduling?)
 
 Misc OIDs:
 
