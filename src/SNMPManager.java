@@ -77,6 +77,7 @@ private void begin() {
 	//print 
 	File file = null;
 	file = new File(ClassLoader.getSystemClassLoader().getResource(".").getPath()+"printers.csv");
+	try {
 		 // create FileWriter object with file as parameter
         FileWriter outputfile = new FileWriter(file);
  
