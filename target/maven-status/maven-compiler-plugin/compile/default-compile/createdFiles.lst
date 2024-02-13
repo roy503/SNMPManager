@@ -1,0 +1,6 @@
+monitor\PrinterSerializer.class
+monitor\PrinterDeserializer.class
+monitor\PrinterReports.class
+monitor\Printer.class
+monitor\Monitor.class
+monitor\Start.class
